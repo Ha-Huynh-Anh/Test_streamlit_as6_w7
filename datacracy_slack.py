@@ -1,12 +1,9 @@
 
 import streamlit as st
-import json
 import requests
-import sys
-import os
 import pandas as pd
 import numpy as np
-import re
+# import re
 from datetime import datetime as dt
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -90,12 +87,21 @@ def load_msg_dict():
                     msg_dict['text'].append(msg_ls[i]['text'] if 'text' in msg_ls[i].keys() else 0) 
                     ## -> Censor message contains tokens
                     text = msg_ls[i]['text']
-                    github_link = re.findall('(?:https?://)?(?:www[.])?github[.]com/[\w-]+/?', text)
+                    github_link = find_github_link(text)
                     msg_dict['github_link'].append(github_link[0] if len(github_link) > 0 else None)
         except:
             print('====> '+ str(response_json))
     msg_df = pd.DataFrame(msg_dict)
     return msg_df
+
+def find_github_link( my_text):
+    keyword = str("https://github.com/")
+    word_list = my_text.split()
+    result = []
+    for word in word_list:
+        if(keyword in word ):
+            result.append(word)
+    return(result)
 
 def process_msg_data(msg_df, user_df, channel_df):
     ## Extract 2 reply_users
